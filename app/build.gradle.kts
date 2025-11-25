@@ -60,6 +60,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.compose.material3.material3)
+    implementation(libs.androidx.compose.ui.text)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -73,6 +74,9 @@ dependencies {
     implementation ("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation  ("androidx.compose.material:material-icons-extended")
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("androidx.compose.foundation:foundation:1.6.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
