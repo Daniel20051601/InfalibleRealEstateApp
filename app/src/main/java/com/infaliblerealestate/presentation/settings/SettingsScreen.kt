@@ -110,46 +110,49 @@ fun SettingsContent(
                             .padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        UserInfoField(
-                            label = "Nombre",
-                            value = state.nombre ?: ""
-                        )
-
-                        UserInfoField(
-                            label = "Apellido",
-                            value = state.apellido ?: ""
-                        )
-
-                        UserInfoField(
-                            label = "Correo electrónico",
-                            value = state.email ?: ""
-                        )
-
-                        UserInfoField(
-                            label = "Teléfono",
-                            value = state.phoneNumber ?: ""
-                        )
-
-                        Text(
-                            text = "Estado de la cuenta",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        Surface(
-                            shape = RoundedCornerShape(8.dp),
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.padding(top = 4.dp)
-                        ) {
-                            Text(
-                                text = "Activa",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        state.usuario?.let{usuario ->
+                            UserInfoField(
+                                label = "Nombre",
+                                value = usuario.nombre
                             )
+
+                            UserInfoField(
+                                label = "Apellido",
+                                value = usuario.apellido
+                            )
+
+                            UserInfoField(
+                                label = "Correo electrónico",
+                                value = usuario.email
+                            )
+
+                            UserInfoField(
+                                label = "Teléfono",
+                                value = usuario.phoneNumber
+                            )
+
+                            Text(
+                                text = "Estado de la cuenta",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = FontWeight.SemiBold
+                            )
+
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                modifier = Modifier.padding(top = 4.dp)
+                            ) {
+                                Text(
+                                    text = usuario.estadoUsuario,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                                )
+                            }
                         }
+
                     }
                 }
 
