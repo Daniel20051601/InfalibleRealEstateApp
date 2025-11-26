@@ -21,4 +21,6 @@ interface CatalogoUiEvent {
     data class onFilterAlquiler(val alquiler: Boolean): CatalogoUiEvent
     data class onFilterVenta(val venta: Boolean): CatalogoUiEvent
     data object showAllFilters: CatalogoUiEvent
+    data class aplicarCategoriaInicial(val categoria: String): CatalogoUiEvent
+
 }

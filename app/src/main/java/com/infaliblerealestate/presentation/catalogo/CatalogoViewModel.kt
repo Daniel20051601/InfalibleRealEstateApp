@@ -93,6 +93,9 @@ class CatalogoViewModel @Inject constructor(
             is CatalogoUiEvent.showAllFilters -> {
                 _state.update { it.copy(showAllFilters = !state.value.showAllFilters) }
             }
+            is CatalogoUiEvent.aplicarCategoriaInicial -> {
+                aplicarCategoriaInicial(event.categoria)
+            }
         }
     }
 
@@ -188,6 +191,22 @@ class CatalogoViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun aplicarCategoriaInicial(categoria: String){
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            when(categoria) {
+                "Casa" -> _state.update { it.copy(filtroCasa = true) }
+                "Departamento" -> _state.update { it.copy(filtroDepartamento = true) }
+                "Villa" -> _state.update { it.copy(filtroVilla = true) }
+                "Penthouse" -> _state.update { it.copy(filtroPenthouse = true) }
+                "Solar" -> _state.update { it.copy(filtroSolar = true) }
+                "Local Comercial" -> _state.update { it.copy(filtroLocalComercial = true) }
+            }
+            filterPropiedades()
+        }
+
     }
 
 

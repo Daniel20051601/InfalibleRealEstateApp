@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Store
@@ -57,7 +58,8 @@ import com.infaliblerealestate.ui.theme.InfalibleRealEstateTheme
 
 @Composable
 fun CatalogoScreen(
-    usuarioId: Int?,
+    usuarioId: String?,
+    categoriaInicial: String? = null,
     viewModel: CatalogoViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,6 +69,12 @@ fun CatalogoScreen(
         state.userMessage?.let {
             if(it.isNotBlank()) snack.showSnackbar(it)
             viewModel.onEvent(CatalogoUiEvent.userMessageShown)
+        }
+    }
+
+    LaunchedEffect(categoriaInicial) {
+        categoriaInicial?.let {
+            viewModel.onEvent(CatalogoUiEvent.aplicarCategoriaInicial(it))
         }
     }
 
@@ -123,6 +131,9 @@ fun CatalogoContent(
                 hostState = snack,
                 modifier = Modifier.padding(bottom = 96.dp)
             )
+        },
+        bottomBar ={
+            Spacer(modifier = Modifier.height(90.dp))
         }
     ) { padding ->
         Column(
@@ -268,8 +279,8 @@ fun FilterDialog(
                     )
 
                     PropiedadChip(
-                        icon = Icons.Default.LocationOn,
-                        text = "Terreno",
+                        icon = Icons.Default.Map,
+                        text = "Solar",
                         onClick = { onEvent(CatalogoUiEvent.onFilterSolar(!state.filtroSolar)) },
                         selected = state.filtroSolar
                     )
