@@ -1,4 +1,4 @@
-package com.infaliblerealestate.data.remote.Propiedades
+package com.infaliblerealestate.data.remote.propiedades
 
 import com.infaliblerealestate.data.remote.dto.propiedades.request.PropiedadesRequest
 import com.infaliblerealestate.data.remote.dto.propiedades.response.PropiedadesResponse
