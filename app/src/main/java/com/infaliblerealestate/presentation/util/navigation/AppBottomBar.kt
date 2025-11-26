@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,7 +20,7 @@ import androidx.navigation.NavController
 fun AppBottomBar(
     navController: NavController,
     currentRoute: String?,
-    usuarioId: Int
+    usuarioId: String
 ) {
 
     NavigationBar(
@@ -72,7 +71,7 @@ fun AppBottomBarPreview() {
     AppBottomBar(
         navController = navController,
         currentRoute = "home_screen/1",
-        usuarioId = 1
+        usuarioId = "PEOKIJRVBHDJSO"
     )
 
 }
