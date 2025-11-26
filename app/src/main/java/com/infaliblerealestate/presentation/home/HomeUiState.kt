@@ -1,16 +1,15 @@
 package com.infaliblerealestate.presentation.home
 
-import com.infaliblerealestate.dominio.model.Usuarios
+import com.infaliblerealestate.dominio.model.Propiedades
 
 data class HomeUiState(
-    val usuarioId: Int? = null,
-    val isLoadingUser: Boolean = false,
-    val isLoadingList: Boolean = false,
-    val listUsuarios: List<Usuarios> = emptyList(),
-    val userName: String = "",
-    val userNameError: String? = null,
-    val password: String = "",
-    val passwordError: String? = null,
+    val usuarioId: String? = null,
+    val isLoading: Boolean = false,
     val userMessage: String? = null,
-    val showDialog: Boolean = false
-)
+    val propiedad: Propiedades? = null,
+    val propiedadId: Int? = null,
+    val propiedades: List<Propiedades> = emptyList(),
+    val showSheet: Boolean = false,
+    val categoriaSeleccionada: String? = null,
+    val categorias: List<String> = emptyList()
+    )
