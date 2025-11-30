@@ -1,5 +1,7 @@
 package com.infaliblerealestate.presentation.home
 
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -29,7 +31,6 @@ import com.infaliblerealestate.presentation.util.navigation.Screen
 @Composable
 fun HomeScreen(
     navController: NavController,
-    usuarioId: String?,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -64,7 +65,7 @@ fun HomeScreenContent(
             LargeTopAppBar(
                 title = {
                     Text(
-                        text = "¿Qué estás buscando\nhoy?",
+                        text = "¡Encuentra tu próximo hogar!",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
@@ -81,12 +82,9 @@ fun HomeScreenContent(
         snackbarHost = {
             SnackbarHost(
                 hostState = snack,
-                modifier = Modifier.padding(bottom = 96.dp)
+                modifier = Modifier.padding(bottom = 96.dp).padding(bottom = 90.dp)
             )
         },
-        bottomBar ={
-            Spacer(modifier = Modifier.height(90.dp))
-        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -107,7 +105,7 @@ fun HomeScreenContent(
                             "Departamento" -> Icons.Default.Business
                             "Villa" -> Icons.Default.Villa
                             "Penthouse" -> Icons.Default.Apartment
-                            "Solar" -> Icons.Default.Map
+                            "Terreno" -> Icons.Default.Map
                             else -> Icons.Default.Store
                         }
                         PropiedadChip(
@@ -115,12 +113,17 @@ fun HomeScreenContent(
                             text = categoria,
                             onClick = {
                                 navController.navigate(
-                                    "${Screen.Catalogo.createRoute("")}?categoria=$categoria"
-                                )
-
+                                    Screen.Catalogo.createRoute(Uri.encode(categoria))
+                                ) {
+                                    popUpTo(Screen.Home.route) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                }
                             },
                             modifier = Modifier.height(60.dp)
                         )
+
                     }
                 }
             }
@@ -159,7 +162,7 @@ fun HomeScreenContent(
                     item {
                         Text(
                             text = "Últimas propiedades",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -173,7 +176,8 @@ fun HomeScreenContent(
                         PropiedadItem(
                             propiedad = propiedad,
                             onClick = { onEvent(HomeUiEvent.LoadPropiedad(propiedad.propiedadId)) },
-                            modifier = Modifier.padding(horizontal = 8.dp)
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            onAddToCart = { onEvent(HomeUiEvent.AddToCart(propiedad)) }
                         )
                     }
                 }

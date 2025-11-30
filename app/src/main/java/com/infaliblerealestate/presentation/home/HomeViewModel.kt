@@ -4,6 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.infaliblerealestate.data.remote.Resource
+import com.infaliblerealestate.dominio.model.CarritoAddItem
+import com.infaliblerealestate.dominio.model.CarritoItem
+import com.infaliblerealestate.dominio.model.Propiedades
+import com.infaliblerealestate.dominio.usecase.carrito.PostCarritoUseCase
 import com.infaliblerealestate.dominio.usecase.propiedades.GetPropiedadUseCase
 import com.infaliblerealestate.dominio.usecase.propiedades.GetPropiedadesUseCase
 import com.infaliblerealestate.dominio.usecase.usuarios.GetUsuarioActualUseCase
@@ -19,7 +23,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     val getPropiedadUseCase: GetPropiedadUseCase,
     val getPropiedadesUseCase: GetPropiedadesUseCase,
-    val getUsuarioActualUseCase: GetUsuarioActualUseCase
+    val getUsuarioActualUseCase: GetUsuarioActualUseCase,
+    val postCarritoUseCase: PostCarritoUseCase
     ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
@@ -27,13 +32,11 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadLastProperties()
-        val categorias = listOf("Casa", "Departamento", "Villa", "Penthouse", "Solar", "Local Comercial")
+        val categorias = listOf("Casa", "Departamento", "Villa", "Penthouse", "Terreno", "Local Comercial")
         viewModelScope.launch {
             _state.update { it.copy(categorias = categorias) }
 
         }
-
-
     }
 
     fun onEvent(event: HomeUiEvent) {
@@ -43,6 +46,7 @@ class HomeViewModel @Inject constructor(
             is HomeUiEvent.HideSheet -> { _state.update { it.copy(showSheet = false) } }
             is HomeUiEvent.LoadPropiedad -> {loadProperti(id = event.id)}
             is HomeUiEvent.CategoriaSeleccionada -> { _state.update { it.copy(categoriaSeleccionada = event.categoria) } }
+            is HomeUiEvent.AddToCart -> { addToCart(propiedad = event.propiedad) }
         }
     }
 
@@ -92,6 +96,31 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+    fun addToCart(propiedad: Propiedades) {
+        viewModelScope.launch {
+            getUsuarioActualUseCase().collect { usuario ->
+                val usuarioId = usuario?.id
+                if (usuarioId == null) {
+                    _state.update { it.copy(userMessage = "Debe iniciar sesión para agregar al carrito") }
+                    return@collect
+                }
+                val item = CarritoAddItem(propiedadId = propiedad.propiedadId)
+                when (val result = postCarritoUseCase(usuarioId, item)) {
+                    is Resource.Success -> {
+                        _state.update { it.copy(userMessage = "Producto agregado al carrito") }
+                    }
+                    is Resource.Error -> {
+                        _state.update { it.copy(userMessage = result.message ?: "Error al agregar al carrito") }
+                    }
+                    else -> {
+                        _state.update { it.copy(userMessage = "Error desconocido") }
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
