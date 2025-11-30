@@ -37,7 +37,7 @@ fun LoginScreen(
 
     LaunchedEffect(state.id) {
         state.id?.let { userId ->
-            navController.navigate(Screen.Home.createRoute(userId)) {
+            navController.navigate(Screen.Home.createRoute()) {
                 popUpTo(Screen.Login.route) { inclusive = true }
             }
         }
