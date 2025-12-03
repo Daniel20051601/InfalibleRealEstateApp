@@ -1,7 +1,9 @@
 package com.infaliblerealestate.presentation.upsertPropiedad
 
+import android.net.Uri
 import com.infaliblerealestate.dominio.model.Categorias
 import com.infaliblerealestate.dominio.model.EstadoPropiedad
+import com.infaliblerealestate.dominio.model.ImagenPropiedad
 import com.infaliblerealestate.dominio.model.Propiedades
 
 data class UpsertPropiedadUiState(
@@ -10,9 +12,15 @@ data class UpsertPropiedadUiState(
     val propiedadAEditar: Propiedades? = null,
     val categorias: List<Categorias> = emptyList(),
     val estadosPropiedades: List<EstadoPropiedad> = emptyList(),
+    val provincias: List<String> = emptyList(),
+    val ciudades: List<String> = emptyList(),
     val isEditing: Boolean = false,
+    val shouldNavigateBack: Boolean = false,
+    val showDeleteDialog: Boolean = false,
     val propiedadId: Int? = null,
     val userMessage: String? = null,
+    val selectedImages: List<Uri> = emptyList(),
+    val deleteImages: List<Int> = emptyList(),
     val titulo: String = "",
     val tituloError: String? = null,
     val precio: Double= 0.0,
@@ -44,5 +52,7 @@ data class UpsertPropiedadUiState(
     val parqueoError: String? = null,
     val metrosCuadrados: Double = 0.0,
     val metrosCuadradosError: String? = null,
-    val imagenUrls: List<String> = emptyList(),
+    val imagenesCargadas: List<ImagenPropiedad> = emptyList(),
+    val filteredCiudades: List<String> = emptyList(),
+    val filteredProvincias: List<String> = emptyList(),
 )
