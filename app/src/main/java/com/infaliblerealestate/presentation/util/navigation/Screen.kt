@@ -24,11 +24,11 @@ sealed class Screen(val route: String){
     data object UpsertPropiedad: Screen("upsert_propiedad_screen?usuarioId={usuarioId}&propiedadId={propiedadId}") {
         const val USUARIO_ID_ARG = "usuarioId"
         const val PROPIEDAD_ID_ARG = "propiedadId"
-        fun createRoute(usuarioId: String?, propiedadId: Int? = null) =
+        fun createRoute(usuarioId: String?, propiedadId: Int? = null, isAdmin: Boolean = false) =
             if (propiedadId != null)
                 "upsert_propiedad_screen?usuarioId=$usuarioId&propiedadId=$propiedadId"
             else
-                "upsert_propiedad_screen?usuarioId=$usuarioId"
+                "upsert_propiedad_screen?usuarioId=$usuarioId&isAdmin=$isAdmin"
     }
 
     data object Login: Screen("login_screen")
