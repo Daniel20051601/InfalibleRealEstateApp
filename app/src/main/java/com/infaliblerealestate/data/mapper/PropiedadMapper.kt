@@ -8,11 +8,13 @@ import com.infaliblerealestate.data.remote.dto.propiedades.response.EstadoPropie
 import com.infaliblerealestate.data.remote.dto.propiedades.response.ImagenPropiedadResponse
 import com.infaliblerealestate.data.remote.dto.propiedades.response.PropiedadesDetalleResponse
 import com.infaliblerealestate.data.remote.dto.propiedades.response.PropiedadesResponse
+import com.infaliblerealestate.data.remote.dto.propiedades.response.UbicacionResponse
 import com.infaliblerealestate.dominio.model.Categorias
 import com.infaliblerealestate.dominio.model.EstadoPropiedad
 import com.infaliblerealestate.dominio.model.ImagenPropiedad
 import com.infaliblerealestate.dominio.model.Propiedades
 import com.infaliblerealestate.dominio.model.PropiedadesDetalle
+import com.infaliblerealestate.dominio.model.Ubicacion
 
 fun Propiedades.toRequest(): PropiedadesRequest = PropiedadesRequest(
     titulo = titulo,
@@ -120,3 +122,10 @@ fun EstadoPropiedadResponse.toDomain(): EstadoPropiedad = EstadoPropiedad(
     nombreEstado = nombreEstado,
     descripcion = descripcion
 )
+
+fun UbicacionResponse.toDomain(): Ubicacion = Ubicacion(
+    provincias = provincias,
+    ciudades = ciudades
+)
+
+
