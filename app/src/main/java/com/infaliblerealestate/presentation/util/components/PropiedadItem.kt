@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -38,7 +39,9 @@ fun PropiedadItem(
     propiedad: Propiedades,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onAddToCart: () -> Unit = {}
+    onAddToCart: () -> Unit = {},
+    onEdit: () -> Unit = {},
+    showAdminOptions: Boolean = false
 ) {
     ElevatedCard(
         modifier = modifier
@@ -60,6 +63,25 @@ fun PropiedadItem(
                     images = propiedad.imagenes,
                     modifier = Modifier.fillMaxSize()
                 )
+                if(showAdminOptions){
+                    Surface(
+                        onClick = { onEdit() },
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ModeEdit,
+                            contentDescription = "Editar propiedad",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
 
                 Surface(
                     onClick = { onAddToCart() },
