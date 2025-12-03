@@ -6,6 +6,7 @@ import com.infaliblerealestate.data.remote.Resource
 import com.infaliblerealestate.dominio.model.CarritoAddItem
 import com.infaliblerealestate.dominio.model.Propiedades
 import com.infaliblerealestate.dominio.usecase.carrito.PostCarritoUseCase
+import com.infaliblerealestate.dominio.usecase.propiedades.GetCategoriasUseCase
 import com.infaliblerealestate.dominio.usecase.propiedades.GetPropiedadUseCase
 import com.infaliblerealestate.dominio.usecase.propiedades.GetPropiedadesUseCase
 import com.infaliblerealestate.dominio.usecase.usuarios.GetUsuarioActualUseCase
@@ -16,6 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.compareTo
+import kotlin.text.compareTo
+import kotlin.text.get
 
 @HiltViewModel
 class CatalogoViewModel @Inject constructor(
@@ -23,11 +27,15 @@ class CatalogoViewModel @Inject constructor(
     val getPropiedadUseCase: GetPropiedadUseCase,
     val getUsuarioActualUseCase: GetUsuarioActualUseCase,
     val postCarritoUseCase: PostCarritoUseCase,
+    val getCategoriasUseCase: GetCategoriasUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(CatalogoUiState())
     val state: StateFlow<CatalogoUiState> = _state.asStateFlow()
+    private var categoriaIds = mapOf<String, Int>()
+
 
     init {
+        cargarCategorias()
         getPropiedades()
         getUsuarioActual()
     }
@@ -91,6 +99,25 @@ class CatalogoViewModel @Inject constructor(
         }
     }
 
+    private fun cargarCategorias() {
+        viewModelScope.launch {
+            getCategoriasUseCase().collect { categorias ->
+                categoriaIds = categorias.associate { categoria ->
+                    (categoria.nombreCategoria?.lowercase()?.trim() ?: "") to categoria.categoriaId
+                }
+            }
+        }
+    }
+
+    private fun obtenerCategoriasSeleccionadas(): Set<Int> = buildSet {
+        categoriaIds["casa"]?.let { if (_state.value.filtroCasa) add(it) }
+        categoriaIds["apartamento"]?.let { if (_state.value.filtroDepartamento) add(it) }
+        categoriaIds["villa"]?.let { if (_state.value.filtroVilla) add(it) }
+        categoriaIds["penthouse"]?.let { if (_state.value.filtroPenthouse) add(it) }
+        categoriaIds["terreno"]?.let { if (_state.value.filtroTerreno) add(it) }
+        categoriaIds["local comercial"]?.let { if (_state.value.filtroLocalComercial) add(it) }
+    }
+
     fun getPropiedades() {
         viewModelScope.launch {
             _state.value = state.value.copy(
@@ -150,44 +177,41 @@ class CatalogoViewModel @Inject constructor(
 
     fun filterPropiedades() {
         viewModelScope.launch {
-            _state.update { estate ->
-                estate.copy(
-                    isLoading = true,
-                    infoMessage = "Aplicando filtros...",
-                    showFilterDialog = false,
-                )
-            }
+            _state.update { it.copy(
+                isLoading = true,
+                infoMessage = "Aplicando filtros...",
+                showFilterDialog = false
+            )}
 
             getPropiedadesUseCase().collect { propiedadesOriginales ->
-                val categoriaIds = buildSet {
-                    if (_state.value.filtroCasa) add(2)
-                    if (_state.value.filtroDepartamento) add(1)
-                    if (_state.value.filtroVilla) add(5)
-                    if (_state.value.filtroPenthouse) add(6)
-                    if (_state.value.filtroTerreno) add(3)
-                    if (_state.value.filtroLocalComercial) add(4)
-                }
+                val categoriaIds = obtenerCategoriasSeleccionadas()
+                val filtradas = aplicarFiltros(propiedadesOriginales, categoriaIds)
 
-                val filteredPropiedades = propiedadesOriginales.filter { propiedad ->
-                    (categoriaIds.isEmpty() || propiedad.categoriaId in categoriaIds) &&
-                            (_state.value.filtroPrecio <= 0.0 || propiedad.precio <= _state.value.filtroPrecio) &&
-                            (_state.value.filtroHabitaciones <= 0 || propiedad.detalle.habitaciones >= _state.value.filtroHabitaciones) &&
-                            (_state.value.filtroBanos <= 0 || propiedad.detalle.banos >= _state.value.filtroBanos) &&
-                            (_state.value.filtroParqueos <= 0 || propiedad.detalle.parqueo >= _state.value.filtroParqueos) &&
-                            (!_state.value.filtroVenta || propiedad.tipoTransaccion.equals("Venta", ignoreCase = true)) &&
-                            (!_state.value.filtroAlquiler || propiedad.tipoTransaccion.equals("Alquiler", ignoreCase = true))
-                }
-
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        showSheet = false,
-                        propiedades = filteredPropiedades,
-                        showFilterDialog = false,
-                        infoMessage = null
-                    )
-                }
+                _state.update { it.copy(
+                    isLoading = false,
+                    showSheet = false,
+                    propiedades = filtradas,
+                    infoMessage = null
+                )}
             }
+        }
+    }
+
+    private fun aplicarFiltros(
+        propiedades: List<Propiedades>,
+        categoriaIds: Set<Int>
+    ): List<Propiedades> {
+        val state = _state.value
+        return propiedades.filter { propiedad ->
+            val detalle = propiedad.detalle
+
+            (categoriaIds.isEmpty() || propiedad.categoriaId in categoriaIds) &&
+                    (state.filtroPrecio <= 0.0 || propiedad.precio <= state.filtroPrecio) &&
+                    (state.filtroHabitaciones <= 0 || detalle.habitaciones >= state.filtroHabitaciones) &&
+                    (state.filtroBanos <= 0 || detalle.banos >= state.filtroBanos) &&
+                    (state.filtroParqueos <= 0 || detalle.parqueo >= state.filtroParqueos) &&
+                    (!state.filtroVenta || propiedad.tipoTransaccion.equals("Venta", ignoreCase = true)) &&
+                    (!state.filtroAlquiler || propiedad.tipoTransaccion.equals("Alquiler", ignoreCase = true))
         }
     }
 
@@ -212,21 +236,45 @@ class CatalogoViewModel @Inject constructor(
         }
     }
 
-    fun aplicarCategoriaInicial(categoria: String){
+
+    fun aplicarCategoriaInicial(categoria: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            when(categoria) {
-                "Casa" -> _state.update { it.copy(filtroCasa = true) }
-                "Departamento" -> _state.update { it.copy(filtroDepartamento = true) }
-                "Villa" -> _state.update { it.copy(filtroVilla = true) }
-                "Penthouse" -> _state.update { it.copy(filtroPenthouse = true) }
-                "Terreno" -> _state.update { it.copy(filtroTerreno = true) }
-                "Local Comercial" -> _state.update { it.copy(filtroLocalComercial = true) }
-            }
-            filterPropiedades()
-        }
 
+            if (categoriaIds.isEmpty()) {
+                getCategoriasUseCase().collect { categorias ->
+                    categoriaIds = categorias.associate { cat ->
+                        (cat.nombreCategoria?.lowercase()?.trim() ?: "") to cat.categoriaId
+                    }
+                }
+            }
+
+            val categoriaKey = categoria.lowercase().trim()
+            val categoriaId = categoriaIds[categoriaKey]
+
+            if (categoriaId != null) {
+                actualizarFiltroPorCategoriaId(categoriaId)
+                filterPropiedades()
+            } else {
+                _state.update { it.copy(
+                    isLoading = false,
+                    userMessage = "Categoría '$categoria' no encontrada. Categorías disponibles: ${categoriaIds.keys}"
+                )}
+            }
+        }
     }
+
+    private fun actualizarFiltroPorCategoriaId(categoriaId: Int) {
+        when (categoriaId) {
+            categoriaIds["apartamento"] -> _state.update { it.copy(filtroDepartamento = true) }
+            categoriaIds["casa"] -> _state.update { it.copy(filtroCasa = true) }
+            categoriaIds["terreno"] -> _state.update { it.copy(filtroTerreno = true) }
+            categoriaIds["local comercial"] -> _state.update { it.copy(filtroLocalComercial = true) }
+            categoriaIds["villa"] -> _state.update { it.copy(filtroVilla = true) }
+            categoriaIds["penthouse"] -> _state.update { it.copy(filtroPenthouse = true) }
+        }
+    }
+
 
     fun addToCart(propiedad: Propiedades) {
         viewModelScope.launch {
