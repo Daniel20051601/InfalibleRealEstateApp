@@ -42,4 +42,19 @@ class CarritoRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override suspend fun deletePropiedadDeCarrito(id: String, propiedadId: Int): Resource<Unit> {
+        return when(val result = remoteDataSource.deletePropiedadDeCarrito(id, propiedadId)){
+            is Resource.Success -> {
+                Resource.Success(Unit)
+            }
+            is Resource.Error -> {
+                Resource.Error(result.message ?: "Error")
+                }
+            else -> {
+                Resource.Error("Error al eliminar el producto del carrito")
+            }
+        }
+    }
+
 }

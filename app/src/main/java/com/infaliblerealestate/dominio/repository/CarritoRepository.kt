@@ -7,4 +7,5 @@ import com.infaliblerealestate.dominio.model.CarritoAddItem
 interface CarritoRepository {
     suspend fun getCarritoByUserid(id: String): Resource<Carrito>
     suspend fun postCarrito(id: String, item: CarritoAddItem): Resource<Unit>
+    suspend fun deletePropiedadDeCarrito(id: String, propiedadId: Int): Resource<Unit>
 }
