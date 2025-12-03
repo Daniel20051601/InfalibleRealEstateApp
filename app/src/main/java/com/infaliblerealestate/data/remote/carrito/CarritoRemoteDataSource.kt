@@ -33,5 +33,19 @@ class CarritoRemoteDataSource @Inject constructor(
         }
     }
 
+    suspend fun deletePropiedadDeCarrito(id: String, propiedadId: Int): Resource<Unit>{
+        return try{
+            val response = api.deletePropiedadDeCarrito(id, propiedadId)
+            if(response.isSuccessful){
+                Resource.Success(Unit)
+            }else{
+                Resource.Error("Error ${response.code()}: ${response.message()}")
+            }
+        }catch (ex: Exception){
+            Resource.Error("Error: ${ex.localizedMessage}")
+        }
+    }
+
+
 }
 
