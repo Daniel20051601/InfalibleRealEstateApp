@@ -14,19 +14,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import com.infaliblerealestate.dominio.model.Usuario
+import com.infaliblerealestate.presentation.util.components.ThemedSnackbarHost
 import com.infaliblerealestate.ui.theme.InfalibleRealEstateTheme
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
+    onNavigateToLogin: () -> Unit,
     usuarioId: String?,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -40,10 +39,8 @@ fun SettingsScreen(
         }
     }
 
-
-
     SettingsContent(
-        navController,
+        onNavigateToLogin = onNavigateToLogin,
         onEvent = viewModel::onEvent,
         state = state,
         snack = snack
@@ -53,7 +50,7 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsContent(
-    navController: NavController,
+    onNavigateToLogin: () -> Unit,
     onEvent: (SettingsUiEvent) -> Unit,
     state: SettingsUiState,
     snack: SnackbarHostState
@@ -73,9 +70,9 @@ fun SettingsContent(
             )
         },
         snackbarHost = {
-            SnackbarHost(
+            ThemedSnackbarHost(
                 hostState = snack,
-                modifier = Modifier.padding(bottom = 80.dp)
+                modifier = Modifier.padding(bottom = 96.dp)
             )
         }
 
@@ -181,9 +178,7 @@ fun SettingsContent(
                 OutlinedButton(
                     onClick = {
                         onEvent(SettingsUiEvent.Logout)
-                        navController.navigate("login_screen") {
-                            popUpTo(0) { inclusive = true }
-                        }
+                        onNavigateToLogin()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -345,7 +340,7 @@ fun editDialog(
 fun previewSettingsContent(){
     InfalibleRealEstateTheme() {
         SettingsContent(
-            navController = NavController(LocalContext.current),
+            onNavigateToLogin = {},
             onEvent = {},
             state = SettingsUiState(
                 usuario = Usuario(
