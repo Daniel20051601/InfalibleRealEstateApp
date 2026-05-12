@@ -209,7 +209,7 @@ Este proyecto es parte de un proyecto académico para la universidad.
 
 ## 📧 Contacto
 
-**Ramón Emilio López **  
+**Ramón Emilio López**  
 [LinkedIn](www.linkedin.com/in/ramón-emilio-lopez-57a833211)
 
 ---
