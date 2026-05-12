@@ -1,12 +1,6 @@
 # Infalible Real Estate - Android App
 
-**Autor:** Ramón Emilio Augusto López Florentino  
-**Matrícula:** 2023-0010  
-**Semestre:** 2025-03
-
-**Usuario**
-estivenreinoso13@gmail.com
-DaNiEl16_
+**Autor:** Ramón Emilio López
 ---
 
 ## 📱 Sobre la Aplicación
@@ -166,13 +160,6 @@ app/src/main/java/com/infaliblerealestate/
 
 ---
 
-
-## 🔄 Integración con Backend
-
-🌐 **API en producción**: https://infaliblerealestate-production.up.railway.app/
-
----
-
 ## 👥 ¿Para quién es útil este proyecto?
 
 ### Usuarios Finales
@@ -222,8 +209,8 @@ Este proyecto es parte de un proyecto académico para la universidad.
 
 ## 📧 Contacto
 
-**Ramón Emilio Augusto López Florentino**  
-Matrícula: 2023-0010  
+**Ramón Emilio López **  
+[LinkedIn](www.linkedin.com/in/ramón-emilio-lopez-57a833211)
 
 ---
 
